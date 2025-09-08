@@ -4,7 +4,8 @@ import classes from "../styles/Header.module.css";
 export default function Header() {
   return (
     <div className={classes["header-container"]}>
-      <Button variant="contained">Contained</Button>
+      <h1>Redux Toolkit CRUD App</h1>
+      <Button variant="contained">Add user</Button>
     </div>
   );
 }
