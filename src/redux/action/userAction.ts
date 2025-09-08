@@ -1,25 +1,47 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { handleAsyncThunk } from "../../api/service";
+import { apiRequestHandler } from "../../api/userApi";
 import type { User } from "../../lib/type";
 
-const API_URL = "http://localhost:3000/users";
+const API_URL = import.meta.env.VITE_API_URL as string;
 
-export const fetchUsers = createAsyncThunk("users/fetch", async () => {
-  return handleAsyncThunk(API_URL);
+export const fetchUsers = createAsyncThunk<User[]>("users/fetch", async () => {
+  return apiRequestHandler({
+    url: API_URL,
+  });
 });
 
+export const getUser = createAsyncThunk<User, string>(
+  "users/get",
+  async (id: string) => {
+    return apiRequestHandler({
+      url: `${API_URL}/${id}`,
+    });
+  }
+);
+
 export const addUser = createAsyncThunk("users/add", async (user: User) => {
-  return handleAsyncThunk(API_URL, "post", user);
+  return apiRequestHandler({
+    url: API_URL,
+    method: "post",
+    data: user,
+  });
 });
 export const updateUser = createAsyncThunk(
   "users/update",
   async (user: User) => {
-    return handleAsyncThunk(`${API_URL}/${user.id}`, "put", user);
+    return apiRequestHandler({
+      url: `${API_URL}/${user.id}`,
+      method: "put",
+      data: user,
+    });
   }
 );
-export const deleteUser = createAsyncThunk(
+export const deleteUser = createAsyncThunk<string, string>(
   "users/delete",
-  async (id: number) => {
-    return handleAsyncThunk(`${API_URL}/${id}`, "delete");
+  async (id: string) => {
+    return apiRequestHandler({
+      url: `${API_URL}/${id}`,
+      method: "delete",
+    });
   }
 );

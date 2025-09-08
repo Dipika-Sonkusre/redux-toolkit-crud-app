@@ -1,14 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { User } from "../../lib/type";
-import { addUser, fetchUsers } from "../action/userAction";
-interface UserState {
-  users: User[];
-  loading: boolean;
-  error: string | null;
-}
+import {
+  addUser,
+  deleteUser,
+  fetchUsers,
+  getUser,
+  updateUser,
+} from "../action/userAction";
+import { showToast } from "../../utils/toastHandler";
+import type { User, UserState } from "../../lib/type";
 
 const initialState: UserState = {
   users: [],
+  user: null,
   loading: false,
   error: null,
 };
@@ -32,6 +35,24 @@ const userSlice = createSlice({
     builder.addCase(fetchUsers.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || "Failed to fetch users";
+      showToast(action.error.message || "Failed to fetch users", "error");
+    });
+
+    builder.addCase(getUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+
+    builder.addCase(getUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.user = action.payload;
+      state.error = null;
+    });
+
+    builder.addCase(getUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || "Failed to fetch user";
+      showToast(action.error.message || "Failed to fetch user", "error");
     });
 
     builder.addCase(addUser.pending, (state) => {
@@ -42,48 +63,58 @@ const userSlice = createSlice({
     builder.addCase(addUser.fulfilled, (state, action) => {
       state.loading = false;
       state.users.push(action.payload);
+      showToast("User added successfully!", "success");
       state.error = null;
     });
 
     builder.addCase(addUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || "Failed to add user";
+      showToast(action.error.message || "Failed to add user", "error");
     });
 
-    // builder.addCase("users/update/pending", (state) => {
-    //   state.loading = true;
-    //   state.error = null;
-    // });
+    builder.addCase(updateUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
 
-    // builder.addCase("users/update/fulfilled", (state, action) => {
-    //   const index = state.users.findIndex(
-    //     (user) => user.id === action.payload.id
-    //   );
-    //   if (index !== -1) {
-    //     state.users[index] = action.payload;
-    //   }
-    // });
+    builder.addCase(updateUser.fulfilled, (state, action) => {
+      const index = state.users.findIndex(
+        (user) => user.id === action.payload.id
+      );
+      if (index !== -1) {
+        state.users[index] = action.payload;
+      }
+      showToast("User updated successfully!", "success");
+      state.loading = false;
+      state.error = null;
+    });
 
-    // builder.addCase("users/update/rejected", (state, action) => {
-    //   state.loading = false;
-    //   state.error = action.error.message || "Failed to update user";
-    // });
+    builder.addCase(updateUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || "Failed to update user";
+      showToast(action.error.message || "Failed to update user", "error");
+    });
 
-    // builder.addCase("users/delete/pending", (state) => {
-    //   state.loading = true;
-    //   state.error = null;
-    // });
+    builder.addCase(deleteUser.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
 
-    // builder.addCase("users/delete/fulfilled", (state, action) => {
-    //   state.loading = false;
-    //   state.users = state.users.filter((user) => user.id !== action.payload.id);
-    //   state.error = null;
-    // });
+    builder.addCase(deleteUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.users = state.users.filter(
+        (user: User) => user.id !== action.payload
+      );
+      state.error = null;
+      showToast("User deleted successfully!", "success");
+    });
 
-    // builder.addCase("users/delete/rejected", (state, action) => {
-    //   state.loading = false;
-    //   state.error = action.error.message || "Failed to delete user";
-    // });
+    builder.addCase(deleteUser.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || "Failed to delete user";
+      showToast(action.error.message || "Failed to delete user", "error");
+    });
   },
 });
 
