@@ -7,16 +7,16 @@
 
 .header-container h1 {
   text-transform: uppercase;
-  color: var(--darkbgcolor);
+  color: var(--color-primary-dark);
 }
 
 .header-container button {
-  background-color: var(--bgcolor);
+  background-color: var(--color-primary);
   font-size: 17px;
   border-radius: 10px;
   padding: 10px 20px;
 }
 
 .header-container button:hover {
-  background-color: var(--darkbgcolor);
+  background-color: var(--color-primary-dark);
 }

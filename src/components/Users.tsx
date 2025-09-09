@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Container,
   Paper,
   Table,
@@ -16,6 +15,7 @@ import classes from "../styles/Users.module.css";
 import ViewUserDialog from "./ViewUserDialog";
 import useUsers from "../hooks/useUsers";
 import { usersColumns } from "../utils/constants";
+import CustomButton from "../commonComponents/CustomButton";
 
 export default function Users() {
   const {
@@ -60,7 +60,7 @@ export default function Users() {
               <TableRow
                 sx={{
                   "& th": {
-                    backgroundColor: "var(--bgcolor)",
+                    backgroundColor: "var(--color-primary)",
                     fontWeight: "bold",
                     textTransform: "uppercase",
                     color: "white",
@@ -86,29 +86,26 @@ export default function Users() {
                   <TableCell align="right">{row.name}</TableCell>
                   <TableCell align="right">{row.email}</TableCell>
                   <TableCell align="right">
-                    <div className={classes["action-buttons"]}>
-                      <Button
-                        variant="outlined"
+                    <Box className={classes["action-buttons"]}>
+                      <CustomButton
                         onClick={() => handleViewUserModel(row.id)}
                         className={classes["view-button"]}
                       >
                         View
-                      </Button>
-                      <Button
-                        variant="outlined"
+                      </CustomButton>
+                      <CustomButton
                         onClick={() => handleEditModel(row)}
                         className={classes["edit-button"]}
                       >
                         Edit
-                      </Button>
-                      <Button
-                        variant="outlined"
+                      </CustomButton>
+                      <CustomButton
                         onClick={() => handleUserDelete(row.id)}
                         className={classes["delete-button"]}
                       >
                         Delete
-                      </Button>
-                    </div>
+                      </CustomButton>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))}
