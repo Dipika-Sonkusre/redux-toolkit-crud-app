@@ -14,12 +14,21 @@ const initialState: UserState = {
   user: null,
   loading: false,
   error: null,
+  page: 0,
+  rowsPerPage: 5,
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {}, // It is mandatory to have reducers object, even if it's empty
+  reducers: {
+    setCurrentPage: (state, action) => {
+      state.page = action.payload;
+    },
+    setRowsPerPage: (state, action) => {
+      state.rowsPerPage = action.payload;
+    },
+  }, // It is mandatory to have reducers object, even if it's empty
   extraReducers: (builder) => {
     builder.addCase(fetchUsers.pending, (state) => {
       state.loading = true;
@@ -117,5 +126,5 @@ const userSlice = createSlice({
     });
   },
 });
-
+export const { setCurrentPage, setRowsPerPage } = userSlice.actions;
 export const userReducer = userSlice.reducer;

@@ -7,6 +7,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
 } from "@mui/material";
 import EditDialog from "./EditDialog";
@@ -30,6 +31,11 @@ export default function Users() {
     handleViewUserModel,
     handleEditModel,
     handleUserDelete,
+    handleChangePage,
+    handleChangeRowsPerPage,
+    paginatedUsers,
+    page,
+    rowsPerPage,
   } = useUsers();
 
   return (
@@ -51,67 +57,78 @@ export default function Users() {
       )}
 
       {!loading && !error && (
-        <TableContainer component={Paper}>
-          <Table
-            className={classes["table-container"]}
-            aria-label="simple table"
-          >
-            <TableHead>
-              <TableRow
-                sx={{
-                  "& th": {
-                    backgroundColor: "var(--color-primary)",
-                    fontWeight: "bold",
-                    textTransform: "uppercase",
-                    color: "white",
-                  },
-                }}
-              >
-                {usersColumns.map((column) => (
-                  <TableCell align={column !== "ID" ? "right" : "left"}>
-                    {column}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((row, ind) => (
+        <>
+          <TableContainer component={Paper}>
+            <Table
+              className={classes["table-container"]}
+              aria-label="simple table"
+            >
+              <TableHead>
                 <TableRow
-                  key={row.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  sx={{
+                    "& th": {
+                      backgroundColor: "var(--color-primary)",
+                      fontWeight: "bold",
+                      textTransform: "uppercase",
+                      color: "white",
+                    },
+                  }}
                 >
-                  <TableCell component="th" scope="row">
-                    {ind + 1}
-                  </TableCell>
-                  <TableCell align="right">{row.name}</TableCell>
-                  <TableCell align="right">{row.email}</TableCell>
-                  <TableCell align="right">
-                    <Box className={classes["action-buttons"]}>
-                      <CustomButton
-                        onClick={() => handleViewUserModel(row.id)}
-                        className={classes["view-button"]}
-                      >
-                        View
-                      </CustomButton>
-                      <CustomButton
-                        onClick={() => handleEditModel(row)}
-                        className={classes["edit-button"]}
-                      >
-                        Edit
-                      </CustomButton>
-                      <CustomButton
-                        onClick={() => handleUserDelete(row.id)}
-                        className={classes["delete-button"]}
-                      >
-                        Delete
-                      </CustomButton>
-                    </Box>
-                  </TableCell>
+                  {usersColumns.map((column) => (
+                    <TableCell align={column !== "ID" ? "right" : "left"}>
+                      {column}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {paginatedUsers.map((row, ind) => (
+                  <TableRow
+                    key={row.id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {page * rowsPerPage + ind + 1}
+                    </TableCell>
+                    <TableCell align="right">{row.name}</TableCell>
+                    <TableCell align="right">{row.email}</TableCell>
+                    <TableCell align="right">
+                      <Box className={classes["action-buttons"]}>
+                        <CustomButton
+                          onClick={() => handleViewUserModel(row.id)}
+                          className={classes["view-button"]}
+                        >
+                          View
+                        </CustomButton>
+                        <CustomButton
+                          onClick={() => handleEditModel(row)}
+                          className={classes["edit-button"]}
+                        >
+                          Edit
+                        </CustomButton>
+                        <CustomButton
+                          onClick={() => handleUserDelete(row.id)}
+                          className={classes["delete-button"]}
+                        >
+                          Delete
+                        </CustomButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            component="div"
+            count={users.length}
+            rowsPerPageOptions={[5, 10, 15, 25, 30]}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </>
       )}
 
       <EditDialog
