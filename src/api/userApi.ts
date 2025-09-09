@@ -10,14 +10,20 @@ interface ApiRequestOptions {
   data?: User | "";
   headers?: Record<string, string>;
 }
+
+const errorMessages: Record<number, string> = {
+  401: "Unauthorized. Please log in again.",
+  403: "Forbidden. You do not have permission.",
+  404: "Requested resource not found.",
+  500: "Server is currently unavailable. Please try later.",
+};
+
 export const apiRequestHandler = async ({
   url,
   method = "get",
   data = "",
   headers = {},
 }: ApiRequestOptions) => {
-  console.log(url,"url");
-  
   try {
     const config: AxiosRequestConfig = {
       method,
@@ -42,43 +48,15 @@ export const apiRequestHandler = async ({
       }
 
       // Server responded with an error status
-      const status = error.response.status;
+      const { status, data } = error.response;
       const serverMessage =
-        error.response.data?.message ||
-        error.response.statusText ||
-        "Server error occurred.";
-
-      // Optional: You can customize messages based on status codes
-      if (status >= 500) {
-        const message = "Server is currently unavailable. Please try later.";
-        showToast(message, "error");
-        throw message;
-      } else if (status === 401) {
-        const message = "Unauthorized. Please log in again.";
-        showToast(message, "error");
-        throw message;
-      } else if (status === 403) {
-        const message = "Forbidden. You do not have permission.";
-        showToast(message, "error");
-        throw message;
-      } else if (status === 404) {
-        const message = "Requested resource not found.";
-        showToast(message, "error");
-        throw message;
-      } else if (status >= 400) {
-        showToast(serverMessage, "error");
-        throw new Error(serverMessage);
-      }
-
-      // Fallback
-      const fMessage = "An error occurred while processing your request.";
-      showToast(fMessage, "error");
-      throw fMessage;
-    } else {
-      // Non-Axios error
-      const message = "An error occurred while processing your request.";
-      showToast(message, "error");
-      throw new Error(message);
+        data?.message || errorMessages[status] || "An error occurred";
+      showToast(serverMessage, "error");
+      throw serverMessage;
     }
+    // Non-Axios error
+    const message = "An error occurred while processing your request.";
+    showToast(message, "error");
+    throw new Error(message);
   }
 };

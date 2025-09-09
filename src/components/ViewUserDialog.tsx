@@ -13,16 +13,13 @@ import {
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { getUser } from "../redux/action/userAction";
 import { useEffect, useMemo } from "react";
+import type { EditAndViewDialogProps } from "../lib/type";
 
 export default function ViewUserDialog({
   open,
   handleClose,
   id,
-}: {
-  open: boolean;
-  handleClose: () => void;
-  id: string | "";
-}) {
+}: EditAndViewDialogProps) {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.user);
 
@@ -70,8 +67,8 @@ export default function ViewUserDialog({
         >
           <Avatar
             sx={{
-              bgcolor: "primary.main",
-              color: "primary.contrastText",
+              bgcolor: "var(--bgcolor)",
+              color: "white",
               width: 72,
               height: 72,
               fontSize: 28,
@@ -103,7 +100,13 @@ export default function ViewUserDialog({
           gap: 1.5,
         }}
       >
-        <Button variant="outlined" onClick={handleClose}>
+        <Button
+          onClick={handleClose}
+          sx={{
+            backgroundColor: "var(--gray)",
+          }}
+          variant="contained"
+        >
           Close
         </Button>
       </DialogActions>
