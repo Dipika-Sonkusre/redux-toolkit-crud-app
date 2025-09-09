@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { deleteUser, fetchUsers } from "../redux/action/userAction";
 import {
   Box,
   Button,
@@ -14,50 +11,26 @@ import {
   TableRow,
 } from "@mui/material";
 import EditDialog from "./EditDialog";
-import type { User } from "../lib/type";
 import ErrorIcon from "@mui/icons-material/Error";
 import classes from "../styles/Users.module.css";
 import ViewUserDialog from "./ViewUserDialog";
+import useUsers from "../hooks/useUsers";
+import { usersColumns } from "../utils/constants";
 
 export default function Users() {
-  const { loading, error, users } = useAppSelector((state) => state.user);
-  const dispatch = useAppDispatch();
-
-  const [isEditModel, setIsEditModel] = useState(false);
-  const [editAndViewId, setEditAndViewId] = useState<string | null>(null);
-
-  const [isViewModel, setIsViewModel] = useState(false);
-
-  useEffect(() => {
-    dispatch(fetchUsers());
-  }, [dispatch]);
-
-  const handleUserDelete = (id: string) => {
-    if (id) {
-      dispatch(deleteUser(id));
-    }
-  };
-
-  const handleEditModel = (row: User) => {
-    setIsEditModel(true);
-    setEditAndViewId(row.id);
-  };
-
-  const handleClose = () => {
-    setIsEditModel(false);
-    setEditAndViewId(null);
-  };
-
-  const handleViewUserModle = (id: string) => {
-    setIsViewModel(true);
-    console.log("View user id:", id);
-    setEditAndViewId(id);
-  };
-
-  const onCloseViewModel = () => {
-    setIsViewModel(false);
-    setEditAndViewId(null);
-  };
+  const {
+    isEditModel,
+    editAndViewId,
+    isViewModel,
+    handleClose,
+    onCloseViewModel,
+    users,
+    loading,
+    error,
+    handleViewUserModel,
+    handleEditModel,
+    handleUserDelete,
+  } = useUsers();
 
   return (
     <Container
@@ -72,7 +45,7 @@ export default function Users() {
 
       {!loading && error && (
         <Box className={classes["error-container"]}>
-          <ErrorIcon sx={{ color: "red" }} />
+          <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
           <p className={classes.error}>{error}</p>
         </Box>
       )}
@@ -80,7 +53,7 @@ export default function Users() {
       {!loading && !error && (
         <TableContainer component={Paper}>
           <Table
-            sx={{ minWidth: 650, width: "100%" }}
+            className={classes["table-container"]}
             aria-label="simple table"
           >
             <TableHead>
@@ -94,46 +67,44 @@ export default function Users() {
                   },
                 }}
               >
-                <TableCell>ID</TableCell>
-                <TableCell align="right">NAME</TableCell>
-                <TableCell align="right">EMAIL</TableCell>
-                <TableCell align="right">ACTIONS</TableCell>
+                {usersColumns.map((column) => (
+                  <TableCell align={column !== "ID" ? "right" : "left"}>
+                    {column}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map((row) => (
+              {users.map((row, ind) => (
                 <TableRow
                   key={row.id}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">
-                    {row.id}
+                    {ind + 1}
                   </TableCell>
                   <TableCell align="right">{row.name}</TableCell>
                   <TableCell align="right">{row.email}</TableCell>
                   <TableCell align="right">
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "10px",
-                        justifyContent: "flex-end",
-                      }}
-                    >
+                    <div className={classes["action-buttons"]}>
                       <Button
                         variant="outlined"
-                        onClick={() => handleViewUserModle(row.id)}
+                        onClick={() => handleViewUserModel(row.id)}
+                        className={classes["view-button"]}
                       >
                         View
                       </Button>
                       <Button
                         variant="outlined"
                         onClick={() => handleEditModel(row)}
+                        className={classes["edit-button"]}
                       >
                         Edit
                       </Button>
                       <Button
                         variant="outlined"
                         onClick={() => handleUserDelete(row.id)}
+                        className={classes["delete-button"]}
                       >
                         Delete
                       </Button>

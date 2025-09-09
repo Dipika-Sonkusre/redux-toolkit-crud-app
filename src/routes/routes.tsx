@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 import { ApiEndpoint } from "../enum";
 import Home from "../components/Home";
 import App from "../App";
+import AddUser from "../components/AddUser";
 
 export const router = createBrowserRouter([
   {
@@ -11,6 +12,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: Home,
+      },
+      {
+        path: ApiEndpoint.ADD_USER,
+        Component: AddUser,
       },
     ],
   },

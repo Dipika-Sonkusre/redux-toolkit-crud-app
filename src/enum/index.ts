@@ -1,8 +1,6 @@
 export const ApiEndpoint = {
   HOME: "/",
-  USERS: "/users",
-  VIEW_USER: "/users/view/:id",
-  EDIT_USER: "/users/edit/:id",
+  ADD_USER: "/add-user",
 } as const;
 
 export type ApiEndpoint = (typeof ApiEndpoint)[keyof typeof ApiEndpoint];
