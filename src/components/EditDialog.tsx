@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { getUser, updateUser } from "../redux/action/userAction";
@@ -21,6 +21,7 @@ import type { EditAndViewDialogProps, User, UserFormData } from "../lib/type";
 import { schema } from "../utils/userValidation";
 import CustomButton from "../commonComponents/CustomButton";
 import classes from "../styles/Dialog.module.css";
+import GlobalLoader from "../commonComponents/GlobalLoader";
 
 export default function EditDialog({
   open,
@@ -29,6 +30,7 @@ export default function EditDialog({
 }: EditAndViewDialogProps) {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.user);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -39,12 +41,14 @@ export default function EditDialog({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: UserFormData) => {
+  const onSubmit = async (data: UserFormData) => {
     // instead of FormData create your own Form Type "UserFormData"
     if (!id) return;
 
+    setIsSubmitting(true);
     const userToUpdate: User = { id, ...data };
-    dispatch(updateUser(userToUpdate));
+    await dispatch(updateUser(userToUpdate));
+    setIsSubmitting(false);
     handleClose();
   };
 
@@ -67,71 +71,75 @@ export default function EditDialog({
   }, [user, setValue]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-      fullWidth
-      maxWidth="sm"
-      PaperProps={{
-        sx: {
-          borderRadius: 2,
-        },
-      }}
-    >
-      <DialogTitle id="alert-dialog-title">
-        <Box className={classes["title"]}>
-          <h2>Edit User</h2>
-        </Box>
-        <Divider />
-      </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent
-          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-        >
-          <TextField
-            id="name"
-            label="Name"
-            variant="filled"
-            {...register("name")}
-            fullWidth
-          />
-          {errors.name && (
-            <span style={{ color: "red" }}>{errors?.name?.message}</span>
-          )}
-          <TextField
-            id="email"
-            type="email"
-            label="Email"
-            variant="filled"
-            fullWidth
-            {...register("email")}
-          />
-          {errors.email && (
-            <span style={{ color: "red" }}>{errors?.email?.message}</span>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <CustomButton
-            onClick={handleClose}
-            sx={{
-              backgroundColor: "var(--color-gray)",
-            }}
-          >
-            Cancel
-          </CustomButton>
+    <>
+      {isSubmitting && <GlobalLoader loading={true} />}
 
-          <CustomButton
-            type="submit"
-            sx={{
-              backgroundColor: "var(--color-success)",
-            }}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+          },
+        }}
+      >
+        <DialogTitle id="alert-dialog-title">
+          <Box className={classes["title"]}>
+            <h2>Edit User</h2>
+          </Box>
+          <Divider />
+        </DialogTitle>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogContent
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
           >
-            Save
-          </CustomButton>
-        </DialogActions>
-      </form>
-    </Dialog>
+            <TextField
+              id="name"
+              label="Name"
+              variant="filled"
+              {...register("name")}
+              fullWidth
+            />
+            {errors.name && (
+              <span style={{ color: "red" }}>{errors?.name?.message}</span>
+            )}
+            <TextField
+              id="email"
+              type="email"
+              label="Email"
+              variant="filled"
+              fullWidth
+              {...register("email")}
+            />
+            {errors.email && (
+              <span style={{ color: "red" }}>{errors?.email?.message}</span>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <CustomButton
+              onClick={handleClose}
+              sx={{
+                backgroundColor: "var(--color-gray)",
+              }}
+            >
+              Cancel
+            </CustomButton>
+
+            <CustomButton
+              type="submit"
+              sx={{
+                backgroundColor: "var(--color-success)",
+              }}
+            >
+              Save
+            </CustomButton>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </>
   );
 }

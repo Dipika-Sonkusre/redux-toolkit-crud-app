@@ -2,6 +2,7 @@ import {
   Box,
   Container,
   Paper,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -38,6 +39,25 @@ export default function Users() {
     rowsPerPage,
   } = useUsers();
 
+  const renderSkeletonRows = (count: number) => {
+    return Array.from(new Array(count)).map((_, index) => (
+      <TableRow key={index}>
+        <TableCell>
+          <Skeleton variant="text" />
+        </TableCell>
+        <TableCell>
+          <Skeleton variant="text" />
+        </TableCell>
+        <TableCell>
+          <Skeleton variant="text" />
+        </TableCell>
+        <TableCell>
+          <Skeleton variant="text" />
+        </TableCell>
+      </TableRow>
+    ));
+  };
+
   return (
     <Container
       maxWidth="lg"
@@ -45,10 +65,6 @@ export default function Users() {
         marginTop: "3rem",
       }}
     >
-      {loading && (
-        <Box sx={{ textAlign: "center", fontSize: "1.2rem" }}>Loading...</Box>
-      )}
-
       {!loading && error && (
         <Box className={classes["error-container"]}>
           <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
@@ -56,7 +72,7 @@ export default function Users() {
         </Box>
       )}
 
-      {!loading && !error && (
+      {!error && (
         <>
           <TableContainer component={Paper}>
             <Table
@@ -82,40 +98,44 @@ export default function Users() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {paginatedUsers.map((row, ind) => (
-                  <TableRow
-                    key={row.id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {page * rowsPerPage + ind + 1}
-                    </TableCell>
-                    <TableCell align="right">{row.name}</TableCell>
-                    <TableCell align="right">{row.email}</TableCell>
-                    <TableCell align="right">
-                      <Box className={classes["action-buttons"]}>
-                        <CustomButton
-                          onClick={() => handleViewUserModel(row.id)}
-                          className={classes["view-button"]}
-                        >
-                          View
-                        </CustomButton>
-                        <CustomButton
-                          onClick={() => handleEditModel(row)}
-                          className={classes["edit-button"]}
-                        >
-                          Edit
-                        </CustomButton>
-                        <CustomButton
-                          onClick={() => handleUserDelete(row.id)}
-                          className={classes["delete-button"]}
-                        >
-                          Delete
-                        </CustomButton>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {loading
+                  ? renderSkeletonRows(5)
+                  : paginatedUsers.map((row, ind) => (
+                      <TableRow
+                        key={row.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          {page * rowsPerPage + ind + 1}
+                        </TableCell>
+                        <TableCell align="right">{row.name}</TableCell>
+                        <TableCell align="right">{row.email}</TableCell>
+                        <TableCell align="right">
+                          <Box className={classes["action-buttons"]}>
+                            <CustomButton
+                              onClick={() => handleViewUserModel(row.id)}
+                              className={classes["view-button"]}
+                            >
+                              View
+                            </CustomButton>
+                            <CustomButton
+                              onClick={() => handleEditModel(row)}
+                              className={classes["edit-button"]}
+                            >
+                              Edit
+                            </CustomButton>
+                            <CustomButton
+                              onClick={() => handleUserDelete(row.id)}
+                              className={classes["delete-button"]}
+                            >
+                              Delete
+                            </CustomButton>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
               </TableBody>
             </Table>
           </TableContainer>
