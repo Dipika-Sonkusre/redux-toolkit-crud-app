@@ -8,11 +8,14 @@
   margin: 2rem auto;
 }
 
-.add-user-container .title {
-  background-color: var(--bgcolor);
-  color: white;
-  padding: 1rem;
-  border-radius: 0.5rem;
+.title {
+  margin-bottom: 0.6rem !important;
+}
+
+.title h2 {
+  font-size: 27px !important;
+  text-transform: uppercase !important;
+  color: var(--color-primary) !important;
 }
 
 .add-user-container form {
@@ -29,9 +32,9 @@
 }
 
 .cancel-btn {
-  background-color: var(--gray) !important;
+  background-color: var(--color-gray) !important;
 }
 
 .save-btn {
-  background-color: var(--bgcolor) !important;
+  background-color: var(--color-primary) !important;
 }

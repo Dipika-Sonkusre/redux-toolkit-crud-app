@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Box, Container, Divider, TextField, Typography } from "@mui/material";
 import ErrorIcon from "@mui/icons-material/Error";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -12,7 +12,8 @@ import { ApiEndpoint } from "../enum";
 import { schema } from "../utils/userValidation";
 import type { UserFormData } from "../lib/type";
 
-import classes from "../styles/AddUser.module.css";
+import classes from "../styles/Dialog.module.css";
+import CustomButton from "../commonComponents/CustomButton";
 
 export default function AddUser() {
   const {
@@ -41,6 +42,7 @@ export default function AddUser() {
       <Box className={classes["title"]}>
         <h2>Add User</h2>
       </Box>
+      <Divider />
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
@@ -58,7 +60,6 @@ export default function AddUser() {
             </Typography>
           </Box>
         )}
-
         <TextField
           id="email"
           label="Email"
@@ -76,21 +77,15 @@ export default function AddUser() {
         )}
 
         <Box className={classes["action-btn-container"]}>
-          <Button
+          <CustomButton
             onClick={() => navigate(ApiEndpoint.HOME)}
-            variant="contained"
             className={classes["cancel-btn"]}
           >
             Cancel
-          </Button>
-          <Button
-            autoFocus
-            type="submit"
-            variant="contained"
-            className={classes["save-btn"]}
-          >
+          </CustomButton>
+          <CustomButton type="submit" className={classes["save-btn"]}>
             Add User
-          </Button>
+          </CustomButton>
         </Box>
       </form>
     </Container>

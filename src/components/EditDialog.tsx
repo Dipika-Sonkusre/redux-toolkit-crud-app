@@ -5,11 +5,12 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { getUser, updateUser } from "../redux/action/userAction";
 
 import {
-  Button,
+  Box,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   TextField,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
@@ -18,6 +19,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import type { EditAndViewDialogProps, User, UserFormData } from "../lib/type";
 import { schema } from "../utils/userValidation";
+import CustomButton from "../commonComponents/CustomButton";
+import classes from "../styles/Dialog.module.css";
 
 export default function EditDialog({
   open,
@@ -77,7 +80,12 @@ export default function EditDialog({
         },
       }}
     >
-      <DialogTitle id="alert-dialog-title">Edit User</DialogTitle>
+      <DialogTitle id="alert-dialog-title">
+        <Box className={classes["title"]}>
+          <h2>Edit User</h2>
+        </Box>
+        <Divider />
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent
           style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
@@ -105,25 +113,23 @@ export default function EditDialog({
           )}
         </DialogContent>
         <DialogActions>
-          <Button
+          <CustomButton
             onClick={handleClose}
             sx={{
-              backgroundColor: "var(--gray)",
+              backgroundColor: "var(--color-gray)",
             }}
-            variant="contained"
           >
             Cancel
-          </Button>
-          <Button
-            autoFocus
+          </CustomButton>
+
+          <CustomButton
             type="submit"
             sx={{
-              backgroundColor: "var(--green)",
+              backgroundColor: "var(--color-success)",
             }}
-            variant="contained"
           >
             Save
-          </Button>
+          </CustomButton>
         </DialogActions>
       </form>
     </Dialog>

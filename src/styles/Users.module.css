@@ -15,7 +15,7 @@
 }
 
 .error {
-  color: red;
+  color: var(--color-error);
   text-align: center;
 }
 
@@ -25,36 +25,25 @@
   justify-content: flex-end;
 }
 
-.table-container button {
-  height: 2.5rem !important;
-  cursor: pointer !important;
-  font-size: 1rem !important;
-  font-weight: 400 !important;
-  margin-top: 2% !important;
-  border: none !important;
-  color: var(--light-gray);
-  background: var(--bgcolor);
-}
-
 .edit-button {
-  background-color: var(--orange) !important;
+  background-color: var(--color-warning) !important;
 }
 .edit-button:hover {
-  background-color: var(--dark-orange) !important;
+  background-color: var(--color-warning-dark) !important;
 }
 
 .delete-button {
-  background-color: var(--light-red) !important;
+  background-color: var(--color-error-light) !important;
 }
 
 .delete-button:hover {
-  background-color: var(--red) !important;
+  background-color: var(--color-error) !important;
 }
 
 .view-button {
-  background: var(--bgcolor) !important;
+  background: var(--color-primary) !important;
 }
 
 .view-button:hover {
-  background: var(--darkbgcolor) !important;
+  background: var(--color-primary-dark) !important;
 }

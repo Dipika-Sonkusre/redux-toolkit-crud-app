@@ -12,19 +12,23 @@ body {
 }
 
 :root {
+  /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --bgcolor: rgb(130, 106, 251);
-  --darkbgcolor: rgb(88, 56, 250);
-  --fontcolor: #333;
-  --red: red;
-  --light-red: #ff3535;
-  --orange: orange;
-  --dark-orange: orangered;
-  --light-gray: #ddd;
-  --gray: gray;
-  --green: green;
-  --disabledbgcolor: #c4c4c4;
-  --disabledcolor: #ffffff;
+
+  /* Primary Theme Colors */
+  --color-primary: rgb(130, 106, 251);
+  --color-primary-dark: rgb(88, 56, 250);
+
+  /* Status Colors */
+  --color-error: red;
+  --color-error-light: #ff3535;
+  --color-warning: orange;
+  --color-warning-dark: orangered;
+  --color-success: green;
+
+  /* Gray Scale */
+  --color-gray-light: #ddd;
+  --color-gray: gray;
 }
 
 .container {
@@ -42,11 +46,11 @@ body {
 }
 
 .error {
-  color: red !important;
+  color: var(--color-error) !important;
 }
 
 .error-icon {
-  color: red !important;
+  color: var(--color-error) !important;
   font-size: 18px;
 }
 
@@ -57,6 +61,13 @@ button {
   font-weight: 400 !important;
   margin-top: 2% !important;
   border: none !important;
-  color: var(--light-gray);
-  background: var(--bgcolor);
+  color: var(--color-gray-light);
+  background: var(--color-primary);
+}
+
+
+/* Home Component  */
+.home-container {
+  display: flex;
+  flex-direction: column;
 }

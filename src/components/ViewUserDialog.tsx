@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Dialog,
   DialogActions,
   DialogContent,
@@ -14,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { getUser } from "../redux/action/userAction";
 import { useEffect, useMemo } from "react";
 import type { EditAndViewDialogProps } from "../lib/type";
+import CustomButton from "../commonComponents/CustomButton";
 
 export default function ViewUserDialog({
   open,
@@ -67,7 +67,7 @@ export default function ViewUserDialog({
         >
           <Avatar
             sx={{
-              bgcolor: "var(--bgcolor)",
+              bgcolor: "var(--color-primary)",
               color: "white",
               width: 72,
               height: 72,
@@ -100,15 +100,14 @@ export default function ViewUserDialog({
           gap: 1.5,
         }}
       >
-        <Button
+        <CustomButton
           onClick={handleClose}
           sx={{
-            backgroundColor: "var(--gray)",
+            backgroundColor: "var(--color-gray)",
           }}
-          variant="contained"
         >
           Close
-        </Button>
+        </CustomButton>
       </DialogActions>
     </Dialog>
   );
