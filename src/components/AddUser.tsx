@@ -14,6 +14,8 @@ import type { UserFormData } from "../lib/type";
 
 import classes from "../styles/Dialog.module.css";
 import CustomButton from "../commonComponents/CustomButton";
+import { useState } from "react";
+import GlobalLoader from "../commonComponents/GlobalLoader";
 
 export default function AddUser() {
   const {
@@ -24,70 +26,77 @@ export default function AddUser() {
     resolver: yupResolver(schema),
     defaultValues: { name: "", email: "" },
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const onSubmit = (data: UserFormData) => {
+    setIsSubmitting(true);
     const newUser = {
       ...data,
       id: Math.random().toString(36).substr(2, 9),
     };
     dispatch(addUser(newUser));
+    setIsSubmitting(false);
     navigate(ApiEndpoint.HOME);
   };
 
   return (
-    <Container maxWidth="sm" className={classes["add-user-container"]}>
-      <Box className={classes["title"]}>
-        <h2>Add User</h2>
-      </Box>
-      <Divider />
+    <>
+      <GlobalLoader loading={isSubmitting} />
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <TextField
-          id="name"
-          label="Name"
-          variant="filled"
-          {...register("name")}
-          fullWidth
-        />
-        {errors.name && (
-          <Box className="error-container">
-            <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
-            <Typography variant="body1" className="error">
-              {errors?.name?.message}
-            </Typography>
-          </Box>
-        )}
-        <TextField
-          id="email"
-          label="Email"
-          variant="filled"
-          {...register("email")}
-          fullWidth
-        />
-        {errors.email && (
-          <Box className="error-container">
-            <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
-            <Typography variant="body1" className="error">
-              {errors?.email?.message}
-            </Typography>
-          </Box>
-        )}
-
-        <Box className={classes["action-btn-container"]}>
-          <CustomButton
-            onClick={() => navigate(ApiEndpoint.HOME)}
-            className={classes["cancel-btn"]}
-          >
-            Cancel
-          </CustomButton>
-          <CustomButton type="submit" className={classes["save-btn"]}>
-            Add User
-          </CustomButton>
+      <Container maxWidth="sm" className={classes["add-user-container"]}>
+        <Box className={classes["title"]}>
+          <h2>Add User</h2>
         </Box>
-      </form>
-    </Container>
+        <Divider />
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextField
+            id="name"
+            label="Name"
+            variant="filled"
+            {...register("name")}
+            fullWidth
+          />
+          {errors.name && (
+            <Box className="error-container">
+              <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+              <Typography variant="body1" className="error">
+                {errors?.name?.message}
+              </Typography>
+            </Box>
+          )}
+          <TextField
+            id="email"
+            label="Email"
+            variant="filled"
+            {...register("email")}
+            fullWidth
+          />
+          {errors.email && (
+            <Box className="error-container">
+              <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+              <Typography variant="body1" className="error">
+                {errors?.email?.message}
+              </Typography>
+            </Box>
+          )}
+
+          <Box className={classes["action-btn-container"]}>
+            <CustomButton
+              onClick={() => navigate(ApiEndpoint.HOME)}
+              className={classes["cancel-btn"]}
+            >
+              Cancel
+            </CustomButton>
+            <CustomButton type="submit" className={classes["save-btn"]}>
+              Add User
+            </CustomButton>
+          </Box>
+        </form>
+      </Container>
+    </>
   );
 }
