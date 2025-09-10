@@ -14,6 +14,8 @@ body {
 :root {
   /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --box-shadow: 0 1px 3px 0 #00000014, 0 1px 2px 0 #0000000a,
+    0 0 12px 0 #0000000a;
 
   /* Primary Theme Colors */
   --color-primary: rgb(130, 106, 251);
@@ -65,9 +67,37 @@ button {
   background: var(--color-primary);
 }
 
-
 /* Home Component  */
-.home-container {
+.container {
   display: flex;
   flex-direction: column;
+}
+
+.home-container {
+  box-shadow: var(--box-shadow) !important;
+  margin-top: 4rem;
+  width: 100%;
+}
+
+.css-5c1adp-MuiContainer-root {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+input[type="number"] {
+  -webkit-appearance: none; /* For Webkit browsers (Chrome, Safari, Edge) */
+  -moz-appearance: none; /* For Mozilla Firefox */
+  appearance: none; /* Standard property */
+  margin: 0; /* Optional: Removes default margin often added by browsers */
+}
+
+/* Optional: To remove the clear icon that might appear in some browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.css-70zvr5-MuiTableContainer-root {
+  overflow-x: clip !important;
 }

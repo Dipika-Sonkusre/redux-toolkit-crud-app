@@ -1,1 +1,9 @@
-export const usersColumns = ["ID", "Name", "Email", "Actions"];
+export const usersColumns = [
+  "ID",
+  "Name",
+  "Email",
+  "Age",
+  "Address",
+  "Phone",
+  "Actions",
+];
