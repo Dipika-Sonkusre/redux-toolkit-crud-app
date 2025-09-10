@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ViewUserDialog from "./ViewUserDialog";
 import EditDialog from "./EditDialog";
 
-import { setCurrentPage, setRowsPerPage } from "../redux/slice/userSlice";
+import { setCurrentPage } from "../redux/slice/userSlice";
 import { deleteUser, fetchUsers } from "../redux/action/userAction";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 
@@ -13,8 +13,8 @@ import type { User } from "../lib/type";
 import {
   Box,
   Container,
+  debounce,
   IconButton,
-  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -30,13 +30,15 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ErrorIcon from "@mui/icons-material/Error";
 import classes from "../styles/Users.module.css";
+import SkeletonLoader from "../commonComponents/SkeletonLoader";
+
+import Search from "./Search";
 
 export default function Users() {
   const dispatch = useAppDispatch();
-  const { loading, error, users, page, rowsPerPage } = useAppSelector(
-    (state) => state.user
-  );
+  const { loading, error, users } = useAppSelector((state) => state.user);
 
+  const [searchText, setSearchText] = useState("");
   const [editAndViewId, setEditAndViewId] = useState<string | null>(null);
   const [isEditModel, setIsEditModel] = useState(false);
   const [isViewModel, setIsViewModel] = useState(false);
@@ -44,6 +46,11 @@ export default function Users() {
     null
   );
   const moreOptionRef = useRef<HTMLElement | null>(null); // Reference for the dropdown
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
 
   // Handle outside clicks to close the dropdown
   useEffect(() => {
@@ -67,6 +74,12 @@ export default function Users() {
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (users) {
+      setFilteredUsers(users);
+    }
+  }, [users]);
 
   const refetch = () => {
     dispatch(fetchUsers());
@@ -106,22 +119,17 @@ export default function Users() {
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    dispatch(setCurrentPage(newPage));
+    setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    dispatch(setRowsPerPage(parseInt(event.target.value, 10)));
-    dispatch(setCurrentPage(0));
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
-  const paginatedUsers = useMemo(
-    () => users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [users, page, rowsPerPage]
-  );
-
-  // Clamp current page when data length or rowsPerPage changes
+  // Set current page when data length or rowsPerPage changes
   useEffect(() => {
     const maxPage = Math.max(0, Math.ceil(users.length / rowsPerPage) - 1);
     if (page > maxPage) {
@@ -129,45 +137,53 @@ export default function Users() {
     }
   }, [users.length, rowsPerPage, page, dispatch]);
 
-  const renderSkeletonRows = (count: number) => {
-    return Array.from(new Array(count)).map((_, index) => (
-      <TableRow key={index}>
-        <TableCell>
-          <Skeleton variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton variant="text" />
-        </TableCell>
-        <TableCell>
-          <Skeleton variant="text" />
-        </TableCell>
-      </TableRow>
-    ));
-  };
-
   const handleMoreOptionButton = (id: string) => {
     setIsMoreOptionOpenId(isMoreOptionOpenId === id ? null : id);
   };
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query) => {
+        const filteredItems: User[] = users.filter((user: User) =>
+          user.name.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredUsers(filteredItems);
+        dispatch(setCurrentPage(0));
+      }, 500),
+    [users]
+  );
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
+    setSearchText(query);
+    debouncedSearch(query);
+  };
+
+  const handleCancelSearch = () => {
+    setSearchText("");
+    setFilteredUsers(users);
+    dispatch(setCurrentPage(0));
+  };
+
+  const paginatedUsers = useMemo(
+    () =>
+      filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [filteredUsers, page, rowsPerPage]
+  );
 
   return (
     <Container
       maxWidth="lg"
       style={{
-        marginTop: "4rem",
+        marginTop: "2rem",
       }}
     >
+      <Search
+        searchText={searchText}
+        handleSearch={handleSearch}
+        handleCancelSearch={handleCancelSearch}
+      />
+
       {!loading && error && (
         <Box className={classes["error-container"]}>
           <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
@@ -177,7 +193,11 @@ export default function Users() {
 
       {!error && (
         <>
-          <TableContainer>
+          <TableContainer
+            style={{
+              marginTop: "2rem",
+            }}
+          >
             <Table
               className={classes["table-container"]}
               aria-label="simple table"
@@ -197,79 +217,76 @@ export default function Users() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {loading
-                  ? renderSkeletonRows(5)
-                  : paginatedUsers.map((row, ind) => (
-                      <TableRow
-                        key={row.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          {page * rowsPerPage + ind + 1}
-                        </TableCell>
-                        <TableCell>{row.name}</TableCell>
-                        <TableCell>{row.email}</TableCell>
-                        <TableCell>{row.age}</TableCell>
-                        <TableCell>{row.address}</TableCell>
-                        <TableCell>{row.phone}</TableCell>
-                        <TableCell>
-                          <Box
-                            sx={{
-                              position: "relative",
-                            }}
+                {loading ? (
+                  <SkeletonLoader count={5} />
+                ) : (
+                  paginatedUsers.map((row, ind) => (
+                    <TableRow key={row.id}>
+                      <TableCell component="th" scope="row">
+                        {page * rowsPerPage + ind + 1}
+                      </TableCell>
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell>{row.email}</TableCell>
+                      <TableCell>{row.age}</TableCell>
+                      <TableCell>{row.address}</TableCell>
+                      <TableCell>{row.phone}</TableCell>
+                      <TableCell>
+                        <Box
+                          sx={{
+                            position: "relative",
+                          }}
+                        >
+                          <IconButton
+                            onClick={() => handleMoreOptionButton(row.id)}
                           >
-                            <IconButton
-                              onClick={() => handleMoreOptionButton(row.id)}
-                            >
-                              <MoreHorizIcon />
-                            </IconButton>
+                            <MoreHorizIcon />
+                          </IconButton>
 
-                            {isMoreOptionOpenId === row.id && (
-                              <Box
-                                className={classes["action-buttons"]}
-                                ref={moreOptionRef}
+                          {isMoreOptionOpenId === row.id && (
+                            <Box
+                              className={classes["action-buttons"]}
+                              ref={moreOptionRef}
+                            >
+                              <Typography
+                                onClick={() => handleViewUserModel(row.id)}
+                                className={classes.links}
                               >
-                                <Typography
-                                  onClick={() => handleViewUserModel(row.id)}
-                                  className={classes.links}
-                                >
-                                  <VisibilityIcon
-                                    sx={{
-                                      fontSize: "20px",
-                                    }}
-                                  />
-                                  View
-                                </Typography>
-                                <Typography
-                                  onClick={() => handleEditModel(row)}
-                                  className={classes.links}
-                                >
-                                  <EditIcon
-                                    sx={{
-                                      fontSize: "20px",
-                                    }}
-                                  />
-                                  Edit
-                                </Typography>
-                                <Typography
-                                  onClick={() => handleUserDelete(row.id)}
-                                  className={classes.links}
-                                >
-                                  <DeleteIcon
-                                    sx={{
-                                      fontSize: "20px",
-                                    }}
-                                  />
-                                  Delete
-                                </Typography>
-                              </Box>
-                            )}
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                                <VisibilityIcon
+                                  sx={{
+                                    fontSize: "20px",
+                                  }}
+                                />
+                                View
+                              </Typography>
+                              <Typography
+                                onClick={() => handleEditModel(row)}
+                                className={classes.links}
+                              >
+                                <EditIcon
+                                  sx={{
+                                    fontSize: "20px",
+                                  }}
+                                />
+                                Edit
+                              </Typography>
+                              <Typography
+                                onClick={() => handleUserDelete(row.id)}
+                                className={classes.links}
+                              >
+                                <DeleteIcon
+                                  sx={{
+                                    fontSize: "20px",
+                                  }}
+                                />
+                                Delete
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>
