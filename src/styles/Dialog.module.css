@@ -12,7 +12,7 @@
   margin-bottom: 0.6rem !important;
 }
 
-.title h2 {
+.title .title-text {
   font-size: 27px !important;
   text-transform: uppercase !important;
   color: var(--color-primary) !important;
@@ -37,4 +37,13 @@
 
 .save-btn {
   background-color: var(--color-primary) !important;
+}
+
+
+.add-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: red !important;
 }
