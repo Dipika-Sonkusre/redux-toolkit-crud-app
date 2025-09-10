@@ -2,6 +2,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  age: number;
+  address: string;
+  phone: string;
 }
 
 export interface UserState {
@@ -16,6 +19,9 @@ export interface UserState {
 export type UserFormData = {
   name: string;
   email: string;
+  age: number;
+  address: string;
+  phone: string;
 };
 
 export interface EditAndViewDialogProps {

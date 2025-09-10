@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 
-import { Box, Container, Divider, TextField, Typography } from "@mui/material";
-import ErrorIcon from "@mui/icons-material/Error";
-import { yupResolver } from "@hookform/resolvers/yup";
+import CustomButton from "../commonComponents/CustomButton";
+import GlobalLoader from "../commonComponents/GlobalLoader";
 
 import { useAppDispatch } from "../store/hooks";
 import { addUser } from "../redux/action/userAction";
@@ -11,11 +11,12 @@ import { addUser } from "../redux/action/userAction";
 import { ApiEndpoint } from "../enum";
 import { schema } from "../utils/userValidation";
 import type { UserFormData } from "../lib/type";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { Box, Container, Divider, TextField, Typography } from "@mui/material";
+import ErrorIcon from "@mui/icons-material/Error";
 
 import classes from "../styles/Dialog.module.css";
-import CustomButton from "../commonComponents/CustomButton";
-import { useState } from "react";
-import GlobalLoader from "../commonComponents/GlobalLoader";
 
 export default function AddUser() {
   const {
@@ -24,7 +25,7 @@ export default function AddUser() {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { name: "", email: "" },
+    defaultValues: { name: "", email: "", age: 18, address: "", phone: "" },
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,11 +36,18 @@ export default function AddUser() {
     setIsSubmitting(true);
     const newUser = {
       ...data,
+      phone: data.phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3"),
       id: Math.random().toString(36).substr(2, 9),
     };
     dispatch(addUser(newUser));
     setIsSubmitting(false);
     navigate(ApiEndpoint.HOME);
+  };
+
+  const autoFormatPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+    return (e.target.value = e.target.value
+      .replace(/[^0-9]/g, "")
+      .slice(0, 10));
   };
 
   return (
@@ -80,6 +88,58 @@ export default function AddUser() {
               <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
               <Typography variant="body1" className="error">
                 {errors?.email?.message}
+              </Typography>
+            </Box>
+          )}
+
+          <TextField
+            id="age"
+            label="Age"
+            variant="filled"
+            {...register("age")}
+            fullWidth
+            type="number"
+          />
+          {errors.age && (
+            <Box className="error-container">
+              <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+              <Typography variant="body1" className="error">
+                {errors?.age?.message}
+              </Typography>
+            </Box>
+          )}
+
+          <TextField
+            id="address"
+            label="Address"
+            variant="filled"
+            {...register("address")}
+            fullWidth
+            multiline
+          />
+          {errors.address && (
+            <Box className="error-container">
+              <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+              <Typography variant="body1" className="error">
+                {errors?.address?.message}
+              </Typography>
+            </Box>
+          )}
+
+          <TextField
+            id="phone"
+            label="Phone"
+            variant="filled"
+            {...register("phone")}
+            fullWidth
+            type="tel"
+            onInput={autoFormatPhone}
+          />
+          {errors.phone && (
+            <Box className="error-container">
+              <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+              <Typography variant="body1" className="error">
+                {errors?.phone?.message}
               </Typography>
             </Box>
           )}

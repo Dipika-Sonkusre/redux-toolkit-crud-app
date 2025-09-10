@@ -1,7 +1,12 @@
+import ViewUserDialog from "./ViewUserDialog";
+import EditDialog from "./EditDialog";
+import useUsers from "../hooks/useUsers";
+
+import { usersColumns } from "../utils/constants";
 import {
   Box,
   Container,
-  Paper,
+  IconButton,
   Skeleton,
   Table,
   TableBody,
@@ -10,14 +15,16 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Typography,
 } from "@mui/material";
-import EditDialog from "./EditDialog";
+
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import ErrorIcon from "@mui/icons-material/Error";
+
 import classes from "../styles/Users.module.css";
-import ViewUserDialog from "./ViewUserDialog";
-import useUsers from "../hooks/useUsers";
-import { usersColumns } from "../utils/constants";
-import CustomButton from "../commonComponents/CustomButton";
 
 export default function Users() {
   const {
@@ -37,6 +44,9 @@ export default function Users() {
     paginatedUsers,
     page,
     rowsPerPage,
+    handleMoreOptionButton,
+    isMoreOptionOpenId,
+    moreOptionRef,
   } = useUsers();
 
   const renderSkeletonRows = (count: number) => {
@@ -62,7 +72,7 @@ export default function Users() {
     <Container
       maxWidth="lg"
       style={{
-        marginTop: "3rem",
+        marginTop: "4rem",
       }}
     >
       {!loading && error && (
@@ -74,7 +84,7 @@ export default function Users() {
 
       {!error && (
         <>
-          <TableContainer component={Paper}>
+          <TableContainer>
             <Table
               className={classes["table-container"]}
               aria-label="simple table"
@@ -83,15 +93,13 @@ export default function Users() {
                 <TableRow
                   sx={{
                     "& th": {
-                      backgroundColor: "var(--color-primary)",
                       fontWeight: "bold",
-                      textTransform: "uppercase",
-                      color: "white",
+                      fontSize: "16px",
                     },
                   }}
                 >
                   {usersColumns.map((column) => (
-                    <TableCell align={column !== "ID" ? "right" : "left"}>
+                    <TableCell align={column !== "ID" ? "left" : "left"}>
                       {column}
                     </TableCell>
                   ))}
@@ -101,37 +109,67 @@ export default function Users() {
                 {loading
                   ? renderSkeletonRows(5)
                   : paginatedUsers.map((row, ind) => (
-                      <TableRow
-                        key={row.id}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
-                        }}
-                      >
+                      <TableRow key={row.id}>
                         <TableCell component="th" scope="row">
                           {page * rowsPerPage + ind + 1}
                         </TableCell>
-                        <TableCell align="right">{row.name}</TableCell>
-                        <TableCell align="right">{row.email}</TableCell>
-                        <TableCell align="right">
-                          <Box className={classes["action-buttons"]}>
-                            <CustomButton
-                              onClick={() => handleViewUserModel(row.id)}
-                              className={classes["view-button"]}
+                        <TableCell>{row.name}</TableCell>
+                        <TableCell>{row.email}</TableCell>
+                        <TableCell>{row.age}</TableCell>
+                        <TableCell>{row.address}</TableCell>
+                        <TableCell>{row.phone}</TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              position: "relative",
+                            }}
+                          >
+                            <IconButton
+                              onClick={() => handleMoreOptionButton(row.id)}
                             >
-                              View
-                            </CustomButton>
-                            <CustomButton
-                              onClick={() => handleEditModel(row)}
-                              className={classes["edit-button"]}
-                            >
-                              Edit
-                            </CustomButton>
-                            <CustomButton
-                              onClick={() => handleUserDelete(row.id)}
-                              className={classes["delete-button"]}
-                            >
-                              Delete
-                            </CustomButton>
+                              <MoreHorizIcon />
+                            </IconButton>
+
+                            {isMoreOptionOpenId === row.id && (
+                              <Box
+                                className={classes["action-buttons"]}
+                                ref={moreOptionRef}
+                              >
+                                <Typography
+                                  onClick={() => handleViewUserModel(row.id)}
+                                  className={classes.links}
+                                >
+                                  <VisibilityIcon
+                                    sx={{
+                                      fontSize: "20px",
+                                    }}
+                                  />
+                                  View
+                                </Typography>
+                                <Typography
+                                  onClick={() => handleEditModel(row)}
+                                  className={classes.links}
+                                >
+                                  <EditIcon
+                                    sx={{
+                                      fontSize: "20px",
+                                    }}
+                                  />
+                                  Edit
+                                </Typography>
+                                <Typography
+                                  onClick={() => handleUserDelete(row.id)}
+                                  className={classes.links}
+                                >
+                                  <DeleteIcon
+                                    sx={{
+                                      fontSize: "20px",
+                                    }}
+                                  />
+                                  Delete
+                                </Typography>
+                              </Box>
+                            )}
                           </Box>
                         </TableCell>
                       </TableRow>
@@ -142,7 +180,7 @@ export default function Users() {
           <TablePagination
             component="div"
             count={users.length}
-            rowsPerPageOptions={[5, 10, 15, 25, 30]}
+            rowsPerPageOptions={[5, 10, 15, 30]}
             page={page}
             rowsPerPage={rowsPerPage}
             onPageChange={handleChangePage}

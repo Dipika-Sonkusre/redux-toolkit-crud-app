@@ -27,6 +27,7 @@ const userSlice = createSlice({
     },
     setRowsPerPage: (state, action) => {
       state.rowsPerPage = action.payload;
+      state.page = 0;
     },
   }, // It is mandatory to have reducers object, even if it's empty
   extraReducers: (builder) => {

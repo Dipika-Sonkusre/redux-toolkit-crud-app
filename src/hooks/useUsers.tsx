@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { deleteUser, fetchUsers } from "../redux/action/userAction";
 import type { User } from "../lib/type";
@@ -13,6 +13,30 @@ export default function useUsers() {
   const [editAndViewId, setEditAndViewId] = useState<string | null>(null);
   const [isEditModel, setIsEditModel] = useState(false);
   const [isViewModel, setIsViewModel] = useState(false);
+
+  const [isMoreOptionOpenId, setIsMoreOptionOpenId] = useState<string | null>(
+    null
+  );
+  const moreOptionRef = useRef<HTMLElement | null>(null); // Reference for the dropdown
+
+  // Handle outside clicks to close the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        moreOptionRef.current &&
+        !moreOptionRef.current.contains(event.target as Node)
+      ) {
+        setIsMoreOptionOpenId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -33,11 +57,13 @@ export default function useUsers() {
   };
 
   const handleViewUserModel = (id: string) => {
+    setIsMoreOptionOpenId(null);
     setIsViewModel(true);
     setEditAndViewId(id);
   };
 
   const handleUserDelete = async (id: string) => {
+    setIsMoreOptionOpenId(null);
     if (id) {
       await dispatch(deleteUser(id));
       refetch();
@@ -45,36 +71,41 @@ export default function useUsers() {
   };
 
   const handleEditModel = (row: User) => {
+    setIsMoreOptionOpenId(null);
     setIsEditModel(true);
     setEditAndViewId(row.id);
   };
 
-  const handleChangePage = (
-    event: React.MouseEvent<HTMLButtonElement> | null,
-    newPage: number
-  ) => {
-    dispatch(setCurrentPage(newPage));
-  };
+  const handleChangePage = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+      dispatch(setCurrentPage(newPage));
+    },
+    [dispatch]
+  );
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    dispatch(setRowsPerPage(parseInt(event.target.value, 10)));
-    dispatch(setCurrentPage(0));
-  };
+  const handleChangeRowsPerPage = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      dispatch(setRowsPerPage(parseInt(event.target.value, 10)));
+    },
+    [dispatch]
+  );
 
   const paginatedUsers = useMemo(
     () => users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
     [users, page, rowsPerPage]
   );
 
-  // Clamp current page when data length or rowsPerPage changes
+  // set current page when data length or rowsPerPage changes
   useEffect(() => {
     const maxPage = Math.max(0, Math.ceil(users.length / rowsPerPage) - 1);
     if (page > maxPage) {
       dispatch(setCurrentPage(maxPage));
     }
   }, [users.length, rowsPerPage, page, dispatch]);
+
+  const handleMoreOptionButton = (id: string) => {
+    setIsMoreOptionOpenId(isMoreOptionOpenId === id ? null : id);
+  };
 
   return {
     isEditModel,
@@ -97,5 +128,8 @@ export default function useUsers() {
     handleChangeRowsPerPage,
     page,
     rowsPerPage,
+    handleMoreOptionButton,
+    isMoreOptionOpenId,
+    moreOptionRef,
   };
 }

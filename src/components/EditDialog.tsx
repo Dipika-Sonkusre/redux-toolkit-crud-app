@@ -12,6 +12,7 @@ import {
   DialogTitle,
   Divider,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 
@@ -22,6 +23,7 @@ import { schema } from "../utils/userValidation";
 import CustomButton from "../commonComponents/CustomButton";
 import classes from "../styles/Dialog.module.css";
 import GlobalLoader from "../commonComponents/GlobalLoader";
+import ErrorIcon from "@mui/icons-material/Error";
 
 export default function EditDialog({
   open,
@@ -39,6 +41,7 @@ export default function EditDialog({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: { name: "", email: "", age: 18, address: "", phone: "" },
   });
 
   const onSubmit = async (data: UserFormData) => {
@@ -46,7 +49,11 @@ export default function EditDialog({
     if (!id) return;
 
     setIsSubmitting(true);
-    const userToUpdate: User = { id, ...data };
+    const userToUpdate: User = {
+      id,
+      ...data,
+      phone: data.phone.replace(/(\d{3})(\d{3})(\d{4})/, "$1-$2-$3"),
+    };
     await dispatch(updateUser(userToUpdate));
     setIsSubmitting(false);
     handleClose();
@@ -64,11 +71,23 @@ export default function EditDialog({
     if (user) {
       setValue("name", user.name);
       setValue("email", user.email);
+      setValue("age", user.age);
+      setValue("address", user.address);
+      setValue("phone", user.phone.replace(/-/g, ""));
     } else {
       setValue("name", "");
       setValue("email", "");
+      setValue("age", 18);
+      setValue("address", "");
+      setValue("phone", "");
     }
   }, [user, setValue]);
+
+  const autoFormatPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+    return (e.target.value = e.target.value
+      .replace(/[^0-9]/g, "")
+      .slice(0, 10));
+  };
 
   return (
     <>
@@ -105,7 +124,12 @@ export default function EditDialog({
               fullWidth
             />
             {errors.name && (
-              <span style={{ color: "red" }}>{errors?.name?.message}</span>
+              <Box className="error-container">
+                <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+                <Typography variant="body1" className="error">
+                  {errors?.name?.message}
+                </Typography>
+              </Box>
             )}
             <TextField
               id="email"
@@ -116,7 +140,64 @@ export default function EditDialog({
               {...register("email")}
             />
             {errors.email && (
-              <span style={{ color: "red" }}>{errors?.email?.message}</span>
+              <Box className="error-container">
+                <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+                <Typography variant="body1" className="error">
+                  {errors?.email?.message}
+                </Typography>
+              </Box>
+            )}
+
+            <TextField
+              id="age"
+              label="Age"
+              variant="filled"
+              {...register("age")}
+              fullWidth
+              type="number"
+            />
+            {errors.age && (
+              <Box className="error-container">
+                <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+                <Typography variant="body1" className="error">
+                  {errors?.age?.message}
+                </Typography>
+              </Box>
+            )}
+
+            <TextField
+              id="address"
+              label="Address"
+              variant="filled"
+              {...register("address")}
+              fullWidth
+              multiline
+            />
+            {errors.address && (
+              <Box className="error-container">
+                <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+                <Typography variant="body1" className="error">
+                  {errors?.address?.message}
+                </Typography>
+              </Box>
+            )}
+
+            <TextField
+              id="phone"
+              label="Phone"
+              variant="filled"
+              {...register("phone")}
+              fullWidth
+              type="tel"
+              onInput={autoFormatPhone}
+            />
+            {errors.phone && (
+              <Box className="error-container">
+                <ErrorIcon sx={{ color: "red", fontSize: "20px" }} />
+                <Typography variant="body1" className="error">
+                  {errors?.phone?.message}
+                </Typography>
+              </Box>
             )}
           </DialogContent>
           <DialogActions>

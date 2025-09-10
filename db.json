@@ -3,22 +3,58 @@
     {
       "id": "1",
       "name": "John Doe",
-      "email": "john@example.com"
+      "email": "john@example.com",
+      "age": 25,
+      "address": "123 Main St, Anytown, USA",
+      "phone": "123-456-7890"
     },
     {
       "id": "2",
       "name": "Jane Smith",
-      "email": "jane@example.com"
+      "email": "jane@example.com",
+      "age": 30,
+      "address": "456 Elm St, Anytown, USA",
+      "phone": "987-654-3210"
     },
     {
       "id": "3",
       "name": "Alice Johnson",
-      "email": "alice@example.com"
+      "email": "alice@example.com",
+      "age": 28,
+      "address": "789 Oak St, Anytown, USA",
+      "phone": "765-432-1098"
     },
     {
       "id": "h83d6vr7a",
       "name": "Dipika",
-      "email": "dipika@wc.com"
+      "email": "dipika@wc.com",
+      "age": 26,
+      "address": "123 Main St, Anytown, USA",
+      "phone": "123-456-7890"
+    },
+    {
+      "id": "e794zqkcs",
+      "name": "csd",
+      "email": "csd1@wc.com",
+      "age": 27,
+      "address": "456 Elm St, Anytown, USA",
+      "phone": "987-654-3210"
+    },
+    {
+      "id": "n6tlp1su3",
+      "name": "bfg",
+      "email": "csdcsdc@wc.com",
+      "age": 29,
+      "address": "789 Oak St, Anytown, USA",
+      "phone": "765-432-1098"
+    },
+    {
+      "id": "jkun2ku1q",
+      "phone": "452-635-2154",
+      "address": "Testing csdcsdcsdc",
+      "age": 23,
+      "email": "laksh@gmail.com",
+      "name": "Laksh"
     }
   ]
 }
