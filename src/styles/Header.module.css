@@ -1,0 +1,33 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 20px;
+}
+
+.header-container h1 {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.header-container p {
+  color: var(--color-primary-dark);
+}
+
+.header-container button {
+  background-color: var(--color-primary);
+  font-size: 17px;
+  border-radius: 10px;
+  padding: 10px 20px;
+}
+
+.header-container button:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.header-container .add-user-btn {
+  border-radius: 20px;
+  text-transform: capitalize;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+}

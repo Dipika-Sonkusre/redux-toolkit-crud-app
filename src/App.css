@@ -1,42 +1,108 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  min-height: 100vh;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+:root {
+  /* Shadows */
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --box-shadow: 0 1px 3px 0 #00000014, 0 1px 2px 0 #0000000a,
+    0 0 12px 0 #0000000a;
+
+  /* Primary Theme Colors */
+  --color-primary: rgb(130, 106, 251);
+  --color-primary-dark: rgb(88, 56, 250);
+
+  /* Status Colors */
+  --color-error: red;
+  --color-error-light: #ff3535;
+  --color-warning: orange;
+  --color-warning-dark: orangered;
+  --color-success: green;
+
+  /* Gray Scale */
+  --color-gray-light: #ddd;
+  --color-gray: gray;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
 }
 
-.card {
-  padding: 2em;
+.error-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.read-the-docs {
-  color: #888;
+.error {
+  color: var(--color-error) !important;
+}
+
+.error-icon {
+  color: var(--color-error) !important;
+  font-size: 18px;
+}
+
+button {
+  height: 2.5rem !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  margin-top: 2% !important;
+  border: none !important;
+  color: var(--color-gray-light);
+  background: var(--color-primary);
+}
+
+/* Home Component  */
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-container {
+  box-shadow: var(--box-shadow) !important;
+  margin-top: 4rem;
+  width: 100%;
+}
+
+.css-5c1adp-MuiContainer-root {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+input[type="number"] {
+  -webkit-appearance: none; /* For Webkit browsers (Chrome, Safari, Edge) */
+  -moz-appearance: none; /* For Mozilla Firefox */
+  appearance: none; /* Standard property */
+  margin: 0; /* Optional: Removes default margin often added by browsers */
+}
+
+/* Optional: To remove the clear icon that might appear in some browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.css-70zvr5-MuiTableContainer-root {
+  overflow-x: clip !important;
+}
+
+.css-quhxjy-MuiInputBase-root-MuiOutlinedInput-root {
+  border-radius: 50px !important;
+  width: 300px !important;
 }
