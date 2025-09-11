@@ -251,15 +251,19 @@ export default function Users() {
                         sortColumn === column.key ? sortDirection : false
                       }
                     >
-                      <TableSortLabel
-                        active={sortColumn === column.key}
-                        direction={
-                          sortColumn === column.key ? sortDirection : "asc"
-                        }
-                        onClick={() => column.key && handleSort(column.key)}
-                      >
-                        {column.label}
-                      </TableSortLabel>
+                      {column.sortable ? (
+                        <TableSortLabel
+                          active={sortColumn === column.key}
+                          direction={
+                            sortColumn === column.key ? sortDirection : "asc"
+                          }
+                          onClick={() => column.key && handleSort(column.key)}
+                        >
+                          {column.label}
+                        </TableSortLabel>
+                      ) : (
+                        column.label
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
