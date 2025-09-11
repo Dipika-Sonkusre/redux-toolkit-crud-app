@@ -22,6 +22,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
   Typography,
 } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
@@ -51,6 +52,9 @@ export default function Users() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
+
+  const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Handle outside clicks to close the dropdown
   useEffect(() => {
@@ -165,10 +169,39 @@ export default function Users() {
     dispatch(setCurrentPage(0));
   };
 
+  const handleSort = (column: string) => {
+    if (column === null) return;
+
+    const isAsc = sortColumn === column && sortDirection === "asc";
+    setSortColumn(column);
+    setSortDirection(isAsc ? "desc" : "asc");
+  };
+
+  const sortedData = [...filteredUsers].sort((a, b) => {
+    if (sortColumn === null) return 0;
+    if (
+      a[sortColumn as keyof User] === undefined ||
+      b[sortColumn as keyof User] === undefined
+    )
+      return 0;
+
+    const columnA = a[sortColumn as keyof User];
+    const columnB = b[sortColumn as keyof User];
+
+    if (typeof columnA === "string" && typeof columnB === "string") {
+      return sortDirection === "asc"
+        ? columnA.localeCompare(columnB)
+        : columnB.localeCompare(columnA);
+    } else if (typeof columnA === "number" && typeof columnB === "number") {
+      return sortDirection === "asc" ? columnA - columnB : columnB - columnA;
+    }
+    return 0;
+  });
+
   const paginatedUsers = useMemo(
     () =>
-      filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [filteredUsers, page, rowsPerPage]
+      sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    [sortedData, page, rowsPerPage]
   );
 
   return (
@@ -212,7 +245,22 @@ export default function Users() {
                   }}
                 >
                   {usersColumns.map((column) => (
-                    <TableCell key={column}>{column}</TableCell>
+                    <TableCell
+                      key={column.label}
+                      sortDirection={
+                        sortColumn === column.key ? sortDirection : false
+                      }
+                    >
+                      <TableSortLabel
+                        active={sortColumn === column.key}
+                        direction={
+                          sortColumn === column.key ? sortDirection : "asc"
+                        }
+                        onClick={() => column.key && handleSort(column.key)}
+                      >
+                        {column.label}
+                      </TableSortLabel>
+                    </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
